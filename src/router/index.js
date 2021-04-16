@@ -15,7 +15,7 @@ const router = new Router({
 // router gards
 router.beforeEach((to, from, next) => {
   NProgress.start()
-  const token = store.getters.getAccessToken
+  const token = store.getters.getToken
   if (to.name !== 'login') {
     if (token) {
       store

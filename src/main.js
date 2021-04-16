@@ -9,6 +9,16 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import '@mdi/font/css/materialdesignicons.css'
 
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+
+// register the plugin on vue
+import Toasted from 'vue-toasted';
+
+Vue.use(Toasted)
+
+// use
+Vue.use(mavonEditor)
 Vue.config.productionTip = false
 
 const app = new Vue({

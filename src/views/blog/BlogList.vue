@@ -54,24 +54,33 @@
                 :headers="headers"
                 :items="items"
                 :items-per-page-options="[15, 30, 50]"
-                :server-items-length="pagination.totalCount"
+                :server-items-length="serverItemsLength"
                 :items-per-page="pagination.pageSize"
                 :page.sync="filter['page']"
                 item-key="id"
                 show-select
                 @update:page="handlePageChanged"
+                :footer-props="{
+                  showFirstLastPage: true,
+                  firstIcon: 'mdi-arrow-collapse-left',
+                  lastIcon: 'mdi-arrow-collapse-right',
+                  prevIcon: 'mdi-minus',
+                  nextIcon: 'mdi-plus',
+                }"
               >
-                <template v-slot:[`item.Text`]="{ item }">
+                <template v-slot:[`item.value`]="{ item }">
                   {{ item.value }}
                 </template>
-                <template v-slot:[`item.avatar`]="{ item }">
-                  <c-avatar :size="36" :src="item.avatar" />
+                <template v-slot:[`item.coverImage`]="{ item }"> <img :src="item.coverImage" width="100" /> </template>
+                <template v-slot:[`item.firstTitle`]="{ item }">
+                  <span @click="handleEditItem(item)">{{ item.firstTitle }}</span>
                 </template>
-                <template v-slot:[`item.action`]="{ item }">
+
+                <template #[`item.action`]="{ item }">
                   <v-menu>
-                    <template v-slot:activator="{ on: menu }">
+                    <template #activator="{ on: menu }">
                       <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
+                        <template #activator="{ on: tooltip }">
                           <v-btn icon v-on="onTooltip({ ...tooltip, ...menu })">
                             <v-icon>mdi-dots-vertical</v-icon>
                           </v-btn>
@@ -100,46 +109,53 @@
 
 <script>
 import TooltipMixin from '@/mixins/Tooltip'
-import CAvatar from '@/components/avatar/CAvatar'
 
 export default {
-  components: {
-    CAvatar,
-  },
+  components: {},
   mixins: [TooltipMixin],
   data() {
     return {
       search: '',
       loadingItems: false,
+      serverItemsLength: 0,
       showFilter: false,
       pagination: {
         pageIndex: 1,
-        pageSize: 15,
+        pageSize: 10,
         totalCount: 0,
       },
       filter: {
         page: 1,
-        'filter[loginName]': null,
+        'filter[username]': null,
+        'filter[gender]': null,
       },
       headers: [
         {
-          text: 'Avatar',
-          value: 'avatar',
+          text: '标题',
+          value: 'firstTitle',
         },
         {
-          text: 'Name',
-          value: 'loginName',
+          text: '封面',
+          value: 'coverImage',
         },
         {
-          text: 'Email',
-          value: 'email',
+          text: '作者',
+          value: 'authorNickname',
         },
         {
-          text: 'Phone',
-          value: 'phone',
+          text: '浏览数',
+          value: 'browserCount',
         },
         {
-          text: 'Action',
+          text: '点赞数',
+          value: 'thumbupCount',
+        },
+        {
+          text: '修改时间',
+          value: 'modifyTime',
+        },
+        {
+          text: '操作',
           value: 'action',
         },
       ],
@@ -188,14 +204,14 @@ export default {
     fetchRecords(query) {
       this.loadingItems = true
       this.items = []
-      this.$store
-        .dispatch('fetchUser', this.pagination)
+      return this.$store
+        .dispatch('fetchArticles', this.pagination)
         .then((res) => {
           const { data, pagination } = res.data
-          this.loadingItems = false
-          debugger
+          console.log(data[0])
           this.items = data
-          this.pagination.totalCount = pagination.totalCount
+          this.serverItemsLength = pagination.totalCount
+          this.loadingItems = false
         })
         .catch(() => {
           this.loadingItems = false
@@ -208,19 +224,20 @@ export default {
       })
     },
     handleViewItem() {},
-    handleEditItem({ wxOpenId }) {
+    handleEditItem({ id }) {
       this.$router.push({
-        path: `/acl/user/item/${wxOpenId}`,
+        path: `/blog/item/${id}`,
       })
     },
     handleDeleteItem() {},
     handleSubmit() {},
     handleRefreshItem() {
-      this.fetchRecords(this.filter)
+      this.fetchRecords(this.pagination)
     },
     // filter
-    handlePageChanged(page) {
-      this.filter.page = page
+    async handlePageChanged(page) {
+      this.pagination.pageIndex = page
+      await this.fetchRecords(this.pagination)
     },
     handleResetFilter() {
       this.filter = {

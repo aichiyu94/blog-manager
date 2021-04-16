@@ -9,17 +9,17 @@ const randomColor = () => {
 }
 
 const state = {
-  access_token: null,
-  expires_in: 3600,
+  token: null,
   token_type: 'bearer',
   username: null,
+  wxOpenId: null,
   avatar: null,
   userColor: '#2196f3',
   status: 'online'
 }
 const getters = {
-  getAccessToken: (state) => {
-    return state.access_token
+  getToken: (state) => {
+    return state.token
   },
   getAvatar: (state) => state.avatar,
   getUsername: (state) => state.username,
@@ -35,9 +35,22 @@ const actions = {
         phone
       }
     }).then((resp) => {
-      debugger
-      commit('SET_LOGIN', resp)
+      commit('SET_LOGIN', resp.data)
+      setInterval(() => {
+        dispatch('refreshToken')
+      }, (1000 * 60));
+
       dispatch('fetchProfile')
+    })
+  },
+  refreshToken({ commit }) {
+    return request({
+      url: `/user/refreshToken`,
+      method: 'get'
+    }).then(r => {
+      commit('SET_TOKEN', r.data)
+    }).catch(c => {
+      debugger
     })
   },
   register({ commit, dispatch }, data) {
@@ -48,20 +61,20 @@ const actions = {
     }).then((resp) => {
       commit('SET_LOGIN', resp)
       dispatch('closeConnection')
-      dispatch('fetchProfile')
+      // if (!rootState.socket) {
+      //   dispatch('initSocket')
+      // }
       return resp
     })
   },
   logout({ commit, dispatch }) {
-    dispatch('closeConnection')
-    commit('SET_ACCESS_TOKEN', null)
+    commit('SET_TOKEN', null)
   },
   // get current login user info
-
   fetchProfile({ commit, dispatch, rootState }) {
     return request({
-      url: '/me',
-      method: 'get'
+      url: 'user/me',
+      method: 'post'
     }).then((resp) => {
       commit('SET_LOGIN_PROFILE', resp.data)
       if (!rootState.socket) {
@@ -72,21 +85,23 @@ const actions = {
   }
 }
 const mutations = {
-  SET_LOGIN(state, { access_token, expires_in }) {
-    debugger
-    state.access_token = access_token
-    state.expires_in = expires_in
-  },
-  SET_ACCESS_TOKEN(state, token) {
-    state.access_token = token
-  },
-  SET_LOGIN_PROFILE(state, payload) {
-    state.username = payload.username
-    state.avatar = payload.avatar
+  SET_LOGIN(state, { token, avatar, loginName, wxOpenId }) {
+    state.token = token
+    state.username = loginName
+    state.avatar = avatar
+    state.wxOpenId = wxOpenId
     state.color = randomColor()
+  },
+  SET_TOKEN(state, token) {
+    state.token = token
   },
   UPDATE_SELF_STATUS(state, status) {
     state.status = status
+  },
+  SET_LOGIN_PROFILE(state, payload) {
+    state.username = payload.nickname
+    state.avatar = payload.avatar
+    state.color = randomColor()
   }
 }
 

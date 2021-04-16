@@ -61,8 +61,8 @@ export default {
     },
   },
   mounted() {
-    if (typeof window !== undefined && window._VMA === undefined) {
-      window._VMA = this
+    if (typeof window !== undefined && window.Toast === undefined) {
+      window.Toast = this
     }
   },
   created() {

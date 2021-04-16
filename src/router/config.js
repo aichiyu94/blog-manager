@@ -17,7 +17,7 @@ export const publicRoute = [
     meta: {
       title: 'Login'
     },
-    redirect: '/auth/login',
+    // redirect: '/auth/login',
     hidden: true,
     children: [
       {
@@ -85,6 +85,51 @@ export const protectedRoute = [
         }),
         component: () => import('@/views/Calendar.vue')
       },
+      //blog app
+      {
+        path: '/blog',
+        meta: {
+          title: 'blog',
+          group: 'apps',
+          icon: 'mdi-image',
+          // new: true
+        },
+        component: RouteWrapper,
+        redirect: '/blog/list',
+        children: [
+          {
+            path: '/blog',
+            name: 'blog',
+            meta: {
+              title: 'list',
+              icon: 'mdi-view-grid'
+            },
+            redirect: '/blog/list',
+            component: RouteWrapper,
+            children: [
+              {
+                path: '/blog/List',
+                name: 'Blog List',
+                meta: {
+                  title: 'list',
+                  icon: 'mdi-view-grid'
+                },
+                component: () => import('@/views/blog/BlogList.vue')
+              },
+              {
+                path: '/blog/item/:id',
+                name: 'blog.item.edit',
+                meta: {
+                  title: 'edit',
+                  icon: 'mdi-view-grid'
+                },
+                props: true,
+                component: () => import('@/views/blog/BlogItem.vue')
+              },
+            ]
+          },
+        ]
+      },
       {
         path: '/chat',
         meta: {
@@ -105,7 +150,6 @@ export const protectedRoute = [
         },
         redirect: '/media/file'
       },
-
       //element
       {
         path: '/element',

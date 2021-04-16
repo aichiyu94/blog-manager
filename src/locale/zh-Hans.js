@@ -12,8 +12,10 @@ export default {
   login_account: '登录账户',
   // menu
   menu: {
+    blog: "博客",
     home: '首页',
     media: '媒体',
+    edit: "编辑",
     dashboard: '仪表盘',
     CMS: '内容管理',
     task: '项目',

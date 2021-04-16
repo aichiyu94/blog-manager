@@ -4,7 +4,6 @@ import store from '@/store'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // api base_url
   timeout: 50000, // timeout,
-  headers: { 'Access-Control-Allow-Origin': '*' }
 })
 
 const err = (error) => {
@@ -16,7 +15,7 @@ const err = (error) => {
   }
   switch (status) {
     case 400:
-      window._VMA.$emit('SHOW_SNACKBAR', {
+      window.Toast.$emit('SHOW_SNACKBAR', {
         show: true,
         text: 'Bad Request ' + data.message,
         color: 'red'
@@ -24,23 +23,23 @@ const err = (error) => {
       break
 
     case 422:
-      window._VMA.$emit('SHOW_SNACKBAR', {
+      window.Toast.$emit('SHOW_SNACKBAR', {
         show: true,
         text: message,
         color: 'red'
       })
-
       break
-
     case 401:
-      window._VMA.$emit('AUTH_FAIELD')
+      window.Toast.$emit('AUTH_FAIELD')
+      debugger
+      store.dispatch('logout')
       break
 
     case 403:
-      window._VMA.$emit('ACESS_DENIED')
+      window.Toast.$emit('ACESS_DENIED')
       break
     case 500:
-      window._VMA.$emit('SERVER_ERROR')
+      window.Toast.$emit('SERVER_ERROR')
       break
 
     default:
@@ -55,8 +54,7 @@ const err = (error) => {
 service.interceptors.request.use((config) => {
   config.headers['Access-Control-Allow-Origin'] = '*'
   config.headers['Content-Type'] = 'application/json'
-  config.headers['Authorization'] = 'Bearer ' + store.getters.getAccessToken
-
+  config.headers['Authorization'] = 'Bearer ' + store.getters.getToken
   return config
 }, err)
 
@@ -64,16 +62,14 @@ service.interceptors.request.use((config) => {
 
 service.interceptors.response.use(({ data, config }) => {
   if (['put', 'post', 'delete', 'patch'].includes(config.method) && data.meta) {
-    debugger
-    window._VMA.$emit('SHOW_SNACKBAR', {
+    window.Toast.$emit('SHOW_SNACKBAR', {
       text: data.meta.message,
       color: 'success'
     })
   }
   if (data.error !== undefined) {
-    window._VMA.$emit('API_FAILED', data.error)
+    window.Toast.$emit('API_FAILED', data.error)
   }
-
   return data
 }, err)
 

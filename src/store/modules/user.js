@@ -9,18 +9,9 @@ const getters = {}
 const actions = {
   fetchUser(context, query) {
     return request({
-      url: `/acl/user/`,
-      method: 'get',
-      params: query
-    })
-  },
-  createUser(context, data) {
-    return request({
-      url: `/acl/user/`,
+      url: `/user/users`,
       method: 'post',
-      data: data
-    }).then((resp) => {
-      return resp
+      data: query
     })
   },
   updateUser(context, { id, data }) {
@@ -32,10 +23,11 @@ const actions = {
       return resp
     })
   },
-  getUserById(context, id) {
+  getUserById(context, data) {
     return request({
-      url: `/acl/user/${id}`,
-      method: 'get'
+      url: `/user/GetUserById`,
+      method: 'post',
+      data: data
     }).then((resp) => {
       return resp
     })

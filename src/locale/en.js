@@ -12,7 +12,10 @@ export default {
   sponsor: 'Sponsor',
   // menu
   menu: {
+    blog: "Blog",
+    list: "List",
     home: 'Home',
+    edit: "Edit",
     media: 'Media',
     dashboard: 'Dashboard',
     task: 'Task',
@@ -50,7 +53,6 @@ export default {
   rule: {
     required: '{0} is required'
   },
-
   //error
 
   ...en

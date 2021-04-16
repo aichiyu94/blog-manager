@@ -88,9 +88,7 @@
     <v-card-actions>
       <v-btn @click="handleCancelForm" text>Cancel</v-btn>
       <v-spacer />
-      <v-btn :loaidng="loading" tile color="primary" @click="handleSubmitForm"
-        >Submit</v-btn
-      >
+      <v-btn :loaidng="loading" tile color="primary" @click="handleSubmitForm">Submit</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -99,7 +97,7 @@
 import { EMAIL } from '@/util/regex'
 export default {
   props: {
-    userId: [Number, String]
+    userId: [Number, String],
   },
   data: () => ({
     genders: ['male', 'female', 'other'],
@@ -112,56 +110,53 @@ export default {
       phone: null,
       firstname: null,
       lastname: null,
-      gender: 'male'
+      gender: 'male',
     },
 
     form: {
       username: {
         label: 'Username',
         placeholder: 'Tookit',
-        rules: [(v) => !!v || 'This field is required']
+        rules: [(v) => !!v || 'This field is required'],
       },
       password: {
         label: 'Password',
         placeholder: 'xxx',
-        rules: [(v) => !!v || 'This field is required']
+        rules: [(v) => !!v || 'This field is required'],
       },
       email: {
         label: 'Email',
         placeholder: 'wangqiangshen@gmail.com',
-        rules: [
-          (v) => !!v || 'This field is required',
-          (v) => EMAIL.test(v) || 'Invalid email'
-        ]
+        rules: [(v) => !!v || 'This field is required', (v) => EMAIL.test(v) || 'Invalid email'],
       },
       phone: {
         label: 'phone',
         placeholder: '18682157492',
-        rules: [(v) => !!v || 'This field is required']
+        rules: [(v) => !!v || 'This field is required'],
       },
       firstname: {
         label: 'Firstname',
         placeholder: 'Firstname',
-        rules: [(v) => !!v || 'This field is required']
+        rules: [(v) => !!v || 'This field is required'],
       },
       lastname: {
         label: 'Lastname',
         placeholder: 'Lastname',
-        rules: [(v) => !!v || 'This field is required']
+        rules: [(v) => !!v || 'This field is required'],
       },
       gender: {
         label: 'Gender',
         placeholder: 'gender',
-        rules: [(v) => !!v || 'This field is required']
-      }
+        rules: [(v) => !!v || 'This field is required'],
+      },
     },
 
-    formHasErrors: false
+    formHasErrors: false,
   }),
   computed: {
     formTitle() {
       return !this.userId ? 'Create User' : 'Edit User'
-    }
+    },
   },
   watch: {
     userId: {
@@ -170,11 +165,12 @@ export default {
           this.getItemById(id)
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     getItemById(id) {
+      debugger
       this.loading = true
       this.$store
         .dispatch('getUserById', id)
@@ -203,7 +199,7 @@ export default {
       this.$store
         .dispatch('updateUser', {
           id: this.userId,
-          data: this.formModel
+          data: this.formModel,
         })
         .then(() => {
           this.loading = false
@@ -218,13 +214,13 @@ export default {
         .then(({ data }) => {
           this.loading = false
           this.$router.push({
-            path: `/acl/user/item/${data.id}`
+            path: `/acl/user/item/${data.id}`,
           })
         })
         .catch(() => {
           this.loading = false
         })
-    }
-  }
+    },
+  },
 }
 </script>
