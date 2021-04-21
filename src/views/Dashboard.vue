@@ -4,36 +4,16 @@
       <v-row>
         <!-- mini statistic start -->
         <v-col :cols="12" :sm="6" :lg="3">
-          <mini-statistic-card
-            icon="mdi-facebook"
-            title="100+"
-            sub-title="Likes"
-            color="indigo"
-          />
+          <mini-statistic-card icon="mdi-facebook" title="100+" sub-title="Likes" color="indigo" />
         </v-col>
         <v-col :cols="12" :sm="6" :lg="3">
-          <mini-statistic-card
-            icon="mdi-google"
-            title="150+"
-            sub-title="Connections"
-            color="red"
-          />
+          <mini-statistic-card icon="mdi-google" title="150+" sub-title="Connections" color="red" />
         </v-col>
         <v-col :cols="12" :sm="6" :lg="3">
-          <mini-statistic-card
-            icon="mdi-twitter"
-            title="200+"
-            sub-title="Followers"
-            color="light-blue"
-          />
+          <mini-statistic-card icon="mdi-twitter" title="200+" sub-title="Followers" color="light-blue" />
         </v-col>
         <v-col :cols="12" :sm="6" :lg="3">
-          <mini-statistic-card
-            icon="mdi-instagram"
-            title="50+"
-            sub-title="Shots"
-            color="purple"
-          />
+          <mini-statistic-card icon="mdi-instagram" title="50+" sub-title="Shots" color="purple" />
         </v-col>
         <!-- mini statistic  end -->
         <v-col :lg="8" :sm="12" :cols="12">
@@ -60,7 +40,7 @@
                   ['series[0].smooth', true],
                   ['series[1].smooth', true],
                   ['series[1].type', 'bar'],
-                  ['series[1].areaStyle', {}]
+                  ['series[1].areaStyle', {}],
                 ]"
                 height="400px"
                 width="100%"
@@ -89,14 +69,14 @@
                       color.pink.base,
                       color.green.base,
                       color.cyan.base,
-                      color.teal.base
-                    ]
+                      color.teal.base,
+                    ],
                   ],
                   ['xAxis.show', false],
                   ['yAxis.show', false],
                   ['series[0].type', 'pie'],
                   ['series[0].avoidLabelOverlap', true],
-                  ['series[0].radius', ['50%', '70%']]
+                  ['series[0].radius', ['50%', '70%']],
                 ]"
                 height="400px"
                 width="100%"
@@ -165,13 +145,7 @@
           />
         </v-col>
         <!-- Circle statistic -->
-        <v-col
-          v-for="(item, index) in trending"
-          :key="'c-trending' + index"
-          :lg="4"
-          :sm="12"
-          :cols="12"
-        >
+        <v-col v-for="(item, index) in trending" :key="'c-trending' + index" :lg="4" :sm="12" :cols="12">
           <circle-statistic-card
             :title="item.subheading"
             :sub-title="item.headline"
@@ -191,12 +165,7 @@
             <v-divider />
             <v-card-text>
               <v-timeline align-top dense>
-                <v-timeline-item
-                  v-for="(item, index) in activity"
-                  :key="index"
-                  :color="item.color"
-                  small
-                >
+                <v-timeline-item v-for="(item, index) in activity" :key="index" :color="item.color" small>
                   <v-row class="pt-1">
                     <v-col cols="3">
                       <strong>{{ item.timeString }}</strong>
@@ -235,7 +204,7 @@ export default {
     BoxChart,
     MiniStatisticCard,
     CircleStatisticCard,
-    LinearStatisticCard
+    LinearStatisticCard,
   },
   data: () => ({
     color: Material,
@@ -248,12 +217,12 @@ export default {
         percent: 15,
         icon: {
           label: 'mdi-trending-up',
-          color: 'success'
+          color: 'success',
         },
         linear: {
           value: 15,
-          color: 'success'
-        }
+          color: 'success',
+        },
       },
       {
         subheading: 'Revenue',
@@ -262,12 +231,12 @@ export default {
         percent: 10,
         icon: {
           label: 'mdi-trending-down',
-          color: 'error'
+          color: 'error',
         },
         linear: {
           value: 15,
-          color: 'error'
-        }
+          color: 'error',
+        },
       },
       {
         subheading: 'Orders',
@@ -276,13 +245,13 @@ export default {
         percent: 50,
         icon: {
           label: 'mdi-arrow-up',
-          color: 'info'
+          color: 'info',
         },
         linear: {
           value: 50,
-          color: 'info'
-        }
-      }
+          color: 'info',
+        },
+      },
     ],
     trending: [
       {
@@ -292,12 +261,12 @@ export default {
         percent: 15,
         icon: {
           label: 'mdi-email-open',
-          color: 'info'
+          color: 'info',
         },
         linear: {
           value: 15,
-          color: 'info'
-        }
+          color: 'info',
+        },
       },
       {
         subheading: 'Tasks',
@@ -306,12 +275,12 @@ export default {
         percent: 90,
         icon: {
           label: 'mdi-view-list',
-          color: 'primary'
+          color: 'primary',
         },
         linear: {
           value: 90,
-          color: 'success'
-        }
+          color: 'success',
+        },
       },
       {
         subheading: 'Issues',
@@ -320,53 +289,30 @@ export default {
         percent: 100,
         icon: {
           label: 'mdi-bug',
-          color: 'primary'
+          color: 'primary',
         },
         linear: {
           value: 100,
-          color: 'error'
-        }
-      }
-    ]
+          color: 'error',
+        },
+      },
+    ],
   }),
   computed: {
     activity() {
       return [
         {
-          avatar:
-            'https://s3.amazonaws.com/uifaces/faces/twitter/ludwiczakpawel/128.jpg',
-          timeString: 'Just now',
-          color: 'primary',
-          text: 'Michael finished  one task just now.'
-        },
-        {
-          avatar:
-            'https://s3.amazonaws.com/uifaces/faces/twitter/suprb/128.jpg',
-          timeString: '30 min ago',
-          color: 'teal',
-          text: 'Jim created a new  task.'
-        },
-        {
-          avatar:
-            'https://s3.amazonaws.com/uifaces/faces/twitter/suprb/128.jpg',
-          timeString: '1 hour ago',
-          color: 'indigo',
-          text: 'Li completed the PSD to html convert.'
-        },
-        {
-          avatar:
-            'https://s3.amazonaws.com/uifaces/faces/twitter/suprb/128.jpg',
+          avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/suprb/128.jpg',
           timeString: '3 hour ago',
           color: 'pink',
-          text: 'Michael upload a new pic.'
+          text: 'Michael upload a new pic.',
         },
         {
-          avatar:
-            'https://s3.amazonaws.com/uifaces/faces/twitter/suprb/128.jpg',
+          avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/suprb/128.jpg',
           timeString: '10 min ago',
           color: 'cyan',
-          text: 'Li assigned a a task to Michael'
-        }
+          text: 'Li assigned a a task to Michael',
+        },
       ]
     },
     siteTrafficData() {
@@ -374,7 +320,7 @@ export default {
     },
     locationData() {
       return API.getLocation
-    }
-  }
+    },
+  },
 }
 </script>

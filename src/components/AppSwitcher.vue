@@ -1,10 +1,5 @@
 <template>
-  <v-select
-    hide-details
-    label="Apps"
-    :items="items"
-    @change="handleChange"
-  ></v-select>
+  <v-select hide-details label="Apps" :items="items" @change="handleChange"></v-select>
 </template>
 
 <script>
@@ -15,27 +10,31 @@ export default {
       items: [
         {
           text: 'Dashboard',
-          value: '/dashboard'
+          value: '/dashboard',
         },
         {
           text: 'Chat',
-          value: '/chat'
+          value: '/chat',
         },
         {
           text: 'Media',
-          value: '/Media'
-        }
-      ]
+          value: '/Media',
+        },
+        {
+          text: 'Blog',
+          value: '/blog',
+        },
+      ],
     }
   },
   methods: {
     handleChange(val) {
       const { href } = this.$router.resolve({
-        path: val
+        path: val,
       })
       window.open(href, '_blank')
-    }
-  }
+    },
+  },
 }
 </script>
 

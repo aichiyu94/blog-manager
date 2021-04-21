@@ -6,7 +6,7 @@ export default {
   login: 'Login',
   register: 'Register',
   username: 'Username',
-  password: 'Password',
+  phone: 'Phone',
   login_account: 'Login account',
   //app drawer
   sponsor: 'Sponsor',

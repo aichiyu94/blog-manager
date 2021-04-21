@@ -1,12 +1,12 @@
 <template>
-  <div class="page-user">
+  <div class="page-blog">
     <v-container>
       <v-row>
         <v-col cols="12">
           <v-card tile>
             <v-toolbar flat>
               <v-text-field
-                v-model="filter['filter[username]']"
+                v-model="condition.keywords"
                 text
                 solo
                 flat
@@ -18,27 +18,21 @@
                 @keyup.enter="handleApplyFilter"
                 @click:append="handleApplyFilter"
                 @click:prepend="showFilter = !showFilter"
-                @click:clear="handleClear"
+                @click:clear="handleResetFilter"
               />
               <v-btn icon @click="handleRefreshItem">
                 <v-icon>mdi-refresh</v-icon>
               </v-btn>
-              <v-btn icon @click="handleCreateItem">
+              <v-btn icon @click="handleEditItem">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
             </v-toolbar>
             <v-divider />
-            <v-card v-show="showFilter" flat class="grey lighten-4">
+            <!-- <v-card v-show="showFilter" flat class="grey lighten-4">
               <v-card-text>
-                <v-btn-toggle v-model="filter['filter[gender]']" tile color="deep-purple accent-3">
+                <v-btn-toggle v-model="condition.keywords" tile color="deep-purple accent-3">
                   <v-btn value="male" icon>
                     <v-icon>mdi-gender-male</v-icon>
-                  </v-btn>
-                  <v-btn value="female">
-                    <v-icon>mdi-gender-female</v-icon>
-                  </v-btn>
-                  <v-btn value="other">
-                    <v-icon>mdi-gender-non-binary</v-icon>
                   </v-btn>
                 </v-btn-toggle>
               </v-card-text>
@@ -47,19 +41,20 @@
                 <v-btn text @click="handleResetFilter">Reset</v-btn>
                 <v-btn tile color="primary" @click="handleApplyFilter">Apply</v-btn>
               </v-card-actions>
-            </v-card>
+            </v-card> -->
             <v-card-text class="pa-0">
               <v-data-table
                 :loading="loadingItems"
                 :headers="headers"
                 :items="items"
-                :items-per-page-options="[15, 30, 50]"
+                :items-per-page-options="[5, 10, 15, 30]"
                 :server-items-length="serverItemsLength"
-                :items-per-page="pagination.pageSize"
-                :page.sync="filter['page']"
+                :items-per-page="condition.pageSize"
+                :page.sync="condition.pageIndex"
                 item-key="id"
                 show-select
                 @update:page="handlePageChanged"
+                @update:items-per-page="handlePageSizeChanged"
                 :footer-props="{
                   showFirstLastPage: true,
                   firstIcon: 'mdi-arrow-collapse-left',
@@ -71,11 +66,12 @@
                 <template v-slot:[`item.value`]="{ item }">
                   {{ item.value }}
                 </template>
-                <template v-slot:[`item.coverImage`]="{ item }"> <img :src="item.coverImage" width="100" /> </template>
-                <template v-slot:[`item.firstTitle`]="{ item }">
-                  <span @click="handleEditItem(item)">{{ item.firstTitle }}</span>
+                <template v-slot:[`item.coverImage`]="{ item }">
+                  <img v-if="item.coverImage.length > 4" :src="item.coverImage" width="100" />
                 </template>
-
+                <template v-slot:[`item.firstTitle`]="{ item }">
+                  <span @click="handleEditItem(item)"><v-icon>mdi-eye</v-icon> {{ item.firstTitle }}</span>
+                </template>
                 <template #[`item.action`]="{ item }">
                   <v-menu>
                     <template #activator="{ on: menu }">
@@ -109,6 +105,7 @@
 
 <script>
 import TooltipMixin from '@/mixins/Tooltip'
+import { timeFormat } from '../../util/timeUtil'
 
 export default {
   components: {},
@@ -119,15 +116,11 @@ export default {
       loadingItems: false,
       serverItemsLength: 0,
       showFilter: false,
-      pagination: {
+      condition: {
+        keywords: '',
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 5,
         totalCount: 0,
-      },
-      filter: {
-        page: 1,
-        'filter[username]': null,
-        'filter[gender]': null,
       },
       headers: [
         {
@@ -162,11 +155,6 @@ export default {
       items: [],
       actions: [
         {
-          text: 'View Item',
-          icon: 'mdi-eye',
-          click: this.handleViewItem,
-        },
-        {
           text: 'Edit Item',
           icon: 'mdi-pencil',
           click: this.handleEditItem,
@@ -179,36 +167,21 @@ export default {
       ],
     }
   },
-  watch: {
-    '$route.query': {
-      handler(query) {
-        const filter = this.updateFilterQuery(query)
-        this.fetchRecords(filter)
-      },
-      immediate: true,
-    },
+  watch: {},
+  mounted() {
+    this.fetchRecords()
   },
   methods: {
-    //
-    updateFilterQuery(query) {
-      const filter = Object.assign(this.filter, query)
-      filter.page = parseInt(filter.page)
-      return filter
-    },
-    resetFilter() {
-      this.filter = {
-        page: 1,
-        'filter[username]': null,
-      }
-    },
-    fetchRecords(query) {
+    fetchRecords() {
       this.loadingItems = true
       this.items = []
-      return this.$store
-        .dispatch('fetchArticles', this.pagination)
+      this.$store
+        .dispatch('fetchArticles', this.condition)
         .then((res) => {
           const { data, pagination } = res.data
-          console.log(data[0])
+          for (let d of data) {
+            d.modifyTime = timeFormat(new Date(d.modifyTime))
+          }
           this.items = data
           this.serverItemsLength = pagination.totalCount
           this.loadingItems = false
@@ -217,52 +190,35 @@ export default {
           this.loadingItems = false
         })
     },
-    //action
-    handleCreateItem() {
-      this.$router.push({
-        path: '/acl/user/create',
-      })
-    },
-    handleViewItem() {},
     handleEditItem({ id }) {
       this.$router.push({
-        path: `/blog/item/${id}`,
+        path: `/blog/item/${id ? id : ' '}`,
       })
     },
-    handleDeleteItem() {},
-    handleSubmit() {},
+    handleDeleteItem({ id }) {
+      debugger
+    },
     handleRefreshItem() {
       this.fetchRecords(this.pagination)
     },
     // filter
     async handlePageChanged(page) {
-      this.pagination.pageIndex = page
-      await this.fetchRecords(this.pagination)
+      this.condition.pageIndex = page
+      await this.fetchRecords(this.condition)
+    },
+    async handlePageSizeChanged(size) {
+      this.condition.pageSize = size === -1 ? this.serverItemsLength : size
+      await this.fetchRecords(this.condition)
     },
     handleResetFilter() {
-      this.filter = {
-        page: 1,
-        'filter[username]': null,
-        'filter[gender]': null,
-      }
-      this.$router.replace({
-        path: this.$route.path,
-      })
+      this.condition.keywords = null
     },
-    handleApplyFilter() {
-      this.filter.t = Date.now()
-      this.$router.replace({
-        path: this.$route.path,
-        query: this.filter,
-      })
+    async handleApplyFilter() {
+      debugger
+      await this.fetchRecords(this.condition)
     },
     handleClear() {
       this.resetFilter()
-      this.filter.t = Date.now()
-      this.$router.replace({
-        path: this.$route.path,
-        query: this.filter,
-      })
     },
   },
 }

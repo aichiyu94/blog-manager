@@ -36,39 +36,31 @@ const actions = {
       }
     }).then((resp) => {
       commit('SET_LOGIN', resp.data)
-      setInterval(() => {
-        dispatch('refreshToken')
-      }, (1000 * 60));
-
       dispatch('fetchProfile')
     })
   },
-  refreshToken({ commit }) {
+  logout({ commit, dispatch }) {
+    return request({
+      url: '/user/logoutManagement',
+      method: 'get'
+    }).then((resp) => {
+      commit('SET_TOKEN', null)
+    })
+  },
+  refreshToken({ commit, dispatch }) {
     return request({
       url: `/user/refreshToken`,
       method: 'get'
     }).then(r => {
       commit('SET_TOKEN', r.data)
+      setTimeout(() => {
+        dispatch('refreshToken')
+      }, (1000 * 60))
     }).catch(c => {
-      debugger
+      //refresh failed redirect to login page
+      dispatch('logout')
+      window.location.reload();
     })
-  },
-  register({ commit, dispatch }, data) {
-    return request({
-      url: '/auth/register',
-      method: 'post',
-      data: data
-    }).then((resp) => {
-      commit('SET_LOGIN', resp)
-      dispatch('closeConnection')
-      // if (!rootState.socket) {
-      //   dispatch('initSocket')
-      // }
-      return resp
-    })
-  },
-  logout({ commit, dispatch }) {
-    commit('SET_TOKEN', null)
   },
   // get current login user info
   fetchProfile({ commit, dispatch, rootState }) {
@@ -77,6 +69,7 @@ const actions = {
       method: 'post'
     }).then((resp) => {
       commit('SET_LOGIN_PROFILE', resp.data)
+      dispatch('refreshToken')
       if (!rootState.socket) {
         dispatch('initSocket')
       }

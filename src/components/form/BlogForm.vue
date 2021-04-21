@@ -6,7 +6,7 @@
       <v-form ref="form" v-model="valid">
         <v-row>
           <v-col>
-            <img v-if="article.coverImageBlob" :src="article.coverImageBlob" />
+            <img :src="article.coverImage" />
           </v-col>
         </v-row>
         <v-row>
@@ -14,7 +14,7 @@
             <v-file-input
               ref="cover"
               outlined
-              v-model="article.coverImage"
+              v-model="article.coverImageFile"
               label="cover image"
               dense
               @change="uploadCoverImage"
@@ -107,7 +107,7 @@ export default {
     },
   },
   methods: {
-    editorImage() {
+    editorImage(idx, f) {
       debugger
     },
     inputTags(e) {
@@ -115,16 +115,15 @@ export default {
       this.article.tags.push({ tag: this.tagStr, visibility: true })
       this.tagStr = ''
     },
-    uploadCoverImage(file) {
+    async uploadCoverImage(file) {
       if (file === null) return
-      let fileReader = new FileReader()
-      fileReader.readAsDataURL(file)
-      let that = this
-      fileReader.onload = function () {
-        that.article.coverImageBlob = fileReader.result
-      }
-      fileReader.onerror = function () {
-        alert(fileReader.error)
+      if (this.article.id) {
+        let updatedResult = await this.$store.dispatch('uploadImage', {
+          file: file,
+          resourceId: this.article.id,
+        })
+        this.article.coverImage = updatedResult.data
+        this.$toasted.success('UI.imgLoadSuccessful', { duration: 1500 })
       }
     },
     getItemById(id) {
@@ -135,8 +134,6 @@ export default {
           data.tags = data.tags.map((t) => {
             return { tag: t, visibility: true }
           })
-          data.coverImageBlob = data.coverImage
-          data.coverImage = null
           this.article = data
           this.article.articleId = id
           this.loading = false
@@ -154,18 +151,19 @@ export default {
     async handleSubmitForm() {
       this.loading = true
       this.article.body = this.articleHtml
-      let coverImage = this.article.coverImage
+      let coverImageFile = this.article.coverImageFile
       this.article.tags = this.article.tags
         .filter((c) => c.visibility)
         .map((t) => {
           return t.tag
         })
-      delete this.article.coverImage
+      delete this.article.coverImageFile
       let updatedResult = await this.$store.dispatch('updateArticle', this.article)
       if (updatedResult.data) {
-        if (!coverImage && coverImage !== null) {
+        if (!this.article.id) {
+          //没有上传过图片
           let uploadResult = await this.$store.dispatch('uploadImage', {
-            file: coverImage,
+            file: coverImageFile,
             resourceId: updatedResult.data,
           })
         }

@@ -12,11 +12,6 @@ import '@mdi/font/css/materialdesignicons.css'
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 
-// register the plugin on vue
-import Toasted from 'vue-toasted';
-
-Vue.use(Toasted)
-
 // use
 Vue.use(mavonEditor)
 Vue.config.productionTip = false
@@ -27,7 +22,7 @@ const app = new Vue({
   vuetify,
   render: (h) => h(App)
 })
-Vue.prototype.__ = (key, ...parrams) => {
+Vue.prototype.t = (key, ...parrams) => {
   return app.$vuetify.lang.translator(key, ...parrams)
 }
 

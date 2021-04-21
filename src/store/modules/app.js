@@ -2,6 +2,14 @@ const state = {
   mode: 'light',
   themeColor: '#3f51b5',
   theme: 'inidigo',
+  sysInfo: {
+    home: "https://aichiyu.club",
+    logo: require('../../../public/static/logo-icon.png'),
+    name: "Blog Manager",
+    mail: "mailto:aichiyu94@gmail.com",
+    github: "https://github.com/aichiyu94/blog-manager",
+    donates: [""]
+  },
   notificatons: [
     {
       title: 'New user registered',
@@ -30,6 +38,8 @@ const state = {
   ]
 }
 
+import request from '@/util/request'
+
 // getters
 const getters = {
   getTheme: (state) => {
@@ -41,6 +51,9 @@ const getters = {
   getNotification: (state) => {
     return state.notificatons
   },
+  getSysInfo: (state) => {
+    return state.sysInfo
+  }
 }
 
 // actions
@@ -56,6 +69,14 @@ const actions = {
   },
   clearNotificaton({ commit }) {
     commit('CLEAR_NOTIFICATION')
+  },
+  refreshBlogSettings() {
+    return request({
+      url: `/user/reloadSysConfig`,
+      method: 'get',
+    }).then((resp) => {
+      return resp
+    })
   }
 }
 
@@ -66,6 +87,9 @@ const mutations = {
   },
   setTheme(state, payload) {
     state.theme = payload
+  },
+  setSysInfo(state, sysInfo) {
+    state.sysInfo = sysInfo
   },
   UPDATE_NOTIFICATION(state, payload) {
     state.notificatons.push(payload)

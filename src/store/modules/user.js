@@ -14,15 +14,6 @@ const actions = {
       data: query
     })
   },
-  updateUser(context, { id, data }) {
-    return request({
-      url: `/acl/user/${id}`,
-      method: 'put',
-      data: data
-    }).then((resp) => {
-      return resp
-    })
-  },
   getUserById(context, data) {
     return request({
       url: `/user/GetUserById`,

@@ -6,7 +6,7 @@
       <div class="media_wrapper"><router-view /></div>
       <!-- App Footer -->
       <v-footer height="auto" class="pa-3 app--footer">
-        <span>isocked.com Design &copy; {{ new Date().getFullYear() }} </span>
+        <span>aichiyu.club Design &copy; {{ new Date().getFullYear() }} </span>
         <v-spacer />
         <span class="caption mr-1">Make With Love</span>
         <v-icon color="pink" small>mdi-heart</v-icon>

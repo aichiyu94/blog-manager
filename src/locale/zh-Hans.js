@@ -6,7 +6,7 @@ export default {
   login: '登录',
   register: '注册',
   username: '用户名',
-  password: '密码',
+  phone: '手机',
   //app drawer
   sponsor: '赞助商',
   login_account: '登录账户',
