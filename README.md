@@ -20,13 +20,8 @@ Vue Material Admin Template is a [Vue](https://vuejs.org/index.html/) Based Mate
 And use [Vuetifyjs](https://vuetifyjs.com/) as base framework.
 Vuetify is Awesome.
 
-## Discrod Change
-[Discrod channel](https://discord.gg/7f6TVx)
-
-## Demo
-[http://vma.isocked.com/#/dashboard]
-## Preview
-![Preivew](http://vma.isocked.com//static/preview/01_preview.png)
+## Live (needs account, contacts me by email aichiyu94@gmail.com)
+[https://manager.aichiyu.club]
 
 ## Project Structure
 ``` bash
@@ -96,11 +91,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Donate
 If you find this project useful, you can buy author a glass of juice :tropical_drink:
-
-
-[Paypal Me](https://www.paypal.me/tookit)
-
-[Buy me a coffee](https://www.buymeacoffee.com/tookit)
 
 <a href="https://www.buymeacoffee.com/tookit" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
