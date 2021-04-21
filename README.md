@@ -1,5 +1,5 @@
 
-# Vue Material Admin
+# Blog Admin system based on Vue Material Admin
 
 
 [![CircleCI](https://circleci.com/gh/tookit/vue-material-admin/tree/dev.svg?style=svg)](https://circleci.com/gh/tookit/vue-material-admin/tree/dev)
