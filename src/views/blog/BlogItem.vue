@@ -16,8 +16,10 @@ export default {
   components: {
     BlogForm,
   },
-  props: {
-    id: [String],
+  data() {
+    return {
+      id: this.$route.params.id,
+    }
   },
 }
 </script>

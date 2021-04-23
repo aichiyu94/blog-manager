@@ -69,14 +69,6 @@ const actions = {
   },
   clearNotificaton({ commit }) {
     commit('CLEAR_NOTIFICATION')
-  },
-  refreshBlogSettings() {
-    return request({
-      url: `/user/reloadSysConfig`,
-      method: 'get',
-    }).then((resp) => {
-      return resp
-    })
   }
 }
 

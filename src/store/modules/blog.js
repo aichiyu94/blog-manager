@@ -40,18 +40,6 @@ const actions = {
     }).then((resp) => {
       return resp
     })
-  },
-  uploadImage(context, data) {
-    var form = new FormData();
-    form.append('file', data.file);
-    form.append('resourceId', data.resourceId);
-    return request({
-      url: `/blog/uploadImage`,
-      method: 'post',
-      data: form
-    }).then((resp) => {
-      return resp
-    })
   }
 }
 

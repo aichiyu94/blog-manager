@@ -117,7 +117,7 @@ export const protectedRoute = [
                 component: () => import('@/views/blog/BlogList.vue')
               },
               {
-                path: '/blog/item/:id',
+                path: '/blog/item/',
                 name: 'blog.item.edit',
                 meta: {
                   title: 'edit',

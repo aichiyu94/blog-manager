@@ -21,6 +21,14 @@ module.exports = {
 
   devServer: {
     proxy: {
+      'v1': {
+        target: process.env.VUE_APP_BASE_API,
+        ws: false,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/v1/': '/v1/',
+        },
+      },
       'img': {
         target: process.env.VUE_APP_IMG_API,
         ws: false,

@@ -192,7 +192,8 @@ export default {
     },
     handleEditItem({ id }) {
       this.$router.push({
-        path: `/blog/item/${id ? id : ' '}`,
+        name: 'blog.item.edit',
+        params: { id: id },
       })
     },
     handleDeleteItem({ id }) {
@@ -214,7 +215,6 @@ export default {
       this.condition.keywords = null
     },
     async handleApplyFilter() {
-      debugger
       await this.fetchRecords(this.condition)
     },
     handleClear() {

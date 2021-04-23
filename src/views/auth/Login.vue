@@ -70,8 +70,8 @@ export default {
       loading: false,
       formValid: false,
       formModel: {
-        username: '',
-        phone: '',
+        username: 'luke',
+        phone: '18571512797',
       },
       formRule: {
         username: [(v) => !!v || this.t('rule.required', ['username'])],

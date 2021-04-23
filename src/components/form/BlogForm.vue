@@ -46,8 +46,11 @@
             <mavon-editor
               v-model="article.body"
               ref="editor"
+              :ishljs="true"
+              :shortCut="true"
               @change="editorChange"
               @imgAdd="editorImage"
+              @imgDel="delImage"
               style="min-height: 400px; width: 90%"
             />
           </v-col>
@@ -69,7 +72,6 @@ export default {
     articleId: [String],
   },
   data: () => ({
-    genders: ['male', 'female', 'other'],
     valid: true,
     loading: false,
     article: {
@@ -77,6 +79,7 @@ export default {
       secondTitle: null,
       body: null,
       tags: [],
+      imageNames: [],
       articleId: null,
     },
     tagStr: null,
@@ -88,7 +91,6 @@ export default {
         rules: [(v) => !!v || 'This field is required'],
       },
     },
-
     formHasErrors: false,
   }),
   computed: {
@@ -99,16 +101,21 @@ export default {
   watch: {
     articleId: {
       handler(id) {
-        if (id) {
-          this.getItemById(id)
-        }
+        this.getItemById(id)
       },
       immediate: true,
     },
   },
   methods: {
-    editorImage(idx, f) {
-      debugger
+    editorImage(pos, f) {
+      let that = this
+      this.$store.dispatch('uploadArticleImage', f).then(({ data }) => {
+        that.$refs.editor.$img2Url(pos, 'img/' + data)
+      })
+    },
+    delImage(f) {
+      let fid = f[0].split('/')[1]
+      this.$store.dispatch('deleteImage', { folder: 'ArticleImages', resourceId: fid })
     },
     inputTags(e) {
       if (e.code !== 'Enter' || this.article.tags.find((c) => c.tag === this.tagStr) != undefined) return
@@ -127,20 +134,23 @@ export default {
       }
     },
     getItemById(id) {
-      this.loading = true
-      this.$store
-        .dispatch('getArticleById', { articleId: id })
-        .then(({ data }) => {
-          data.tags = data.tags.map((t) => {
-            return { tag: t, visibility: true }
+      if (id) {
+        this.loading = true
+        this.$store
+          .dispatch('getArticleById', { resourceId: id })
+          .then(({ data }) => {
+            data.tags = data.tags.map((t) => {
+              return { tag: t, visibility: true }
+            })
+
+            this.article = data
+            this.article.articleId = id
+            this.loading = false
           })
-          this.article = data
-          this.article.articleId = id
-          this.loading = false
-        })
-        .catch((e) => {
-          console.log(e)
-        })
+          .catch((e) => {
+            console.log(e)
+          })
+      }
     },
     editorChange(text, html) {
       this.articleHtml = text
@@ -159,17 +169,16 @@ export default {
         })
       delete this.article.coverImageFile
       let updatedResult = await this.$store.dispatch('updateArticle', this.article)
-      if (updatedResult.data) {
-        if (!this.article.id) {
-          //没有上传过图片
-          let uploadResult = await this.$store.dispatch('uploadImage', {
-            file: coverImageFile,
-            resourceId: updatedResult.data,
-          })
-        }
-        this.$toasted.success('UI.successful', { duration: 1500 })
-        this.$router.push('/blog/list')
+      this.article.id = updatedResult.data
+      if (!this.article.id && coverImageFile !== null) {
+        //没有上传过图片
+        let uploadResult = await this.$store.dispatch('uploadCoverImage', {
+          file: coverImageFile,
+          resourceId: updatedResult.data,
+        })
       }
+      this.$toasted.success('UI.successful', { duration: 1500 })
+      this.$router.push('/blog/list')
     },
   },
 }

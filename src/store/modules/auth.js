@@ -71,7 +71,7 @@ const actions = {
       commit('SET_LOGIN_PROFILE', resp.data)
       dispatch('refreshToken')
       if (!rootState.socket) {
-        dispatch('initSocket')
+        // dispatch('initSocket')
       }
       return resp
     })
