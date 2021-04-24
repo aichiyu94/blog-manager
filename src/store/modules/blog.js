@@ -25,8 +25,8 @@ const actions = {
   },
   updateArticle(context, data) {
     return request({
-      url: `/blog/article/save`,
-      method: 'post',
+      url: `/blog/article`,
+      method: 'put',
       data: data
     }).then((resp) => {
       return resp
@@ -34,8 +34,26 @@ const actions = {
   },
   delArticle(context, data) {
     return request({
-      url: `/blog/article/del`,
-      method: 'post',
+      url: `/blog/article`,
+      method: 'delete',
+      data: data
+    }).then((resp) => {
+      return resp
+    })
+  },
+  updateBanner(context, data){
+    return request({
+      url: `/blog/banner`,
+      method: 'put',
+      data: data
+    }).then((resp) => {
+      return resp
+    })
+  },
+  deleteBanner(context, data){
+    return request({
+      url: `/blog/banner`,
+      method: 'delete',
       data: data
     }).then((resp) => {
       return resp
