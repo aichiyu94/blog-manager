@@ -196,8 +196,10 @@ export default {
         params: { id: id },
       })
     },
-    handleDeleteItem({ id }) {
-      debugger
+    async handleDeleteItem({ id }) {
+      await this.$store.dispatch('delArticle',{resourceId: id})
+      this.$toasted.success('successful');
+      await this.fetchRecords();
     },
     handleRefreshItem() {
       this.fetchRecords(this.pagination)

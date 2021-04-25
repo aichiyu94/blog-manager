@@ -44,7 +44,7 @@ const actions = {
   },
   deleteImage(context, data) {
     return request({
-      url: `/common/delete/image`,
+      url: `/common/image`,
       method: 'delete',
       data: data
     }).then((resp) => {
