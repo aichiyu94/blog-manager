@@ -1,9 +1,13 @@
 import request from '@/util/request'
 
-const state = {}
+const state = {
+  resourceId: null
+}
 
 // getters
-const getters = {}
+const getters = {
+  getEditedId: (state) => { return state.resourceId }
+}
 
 // actions
 const actions = {
@@ -14,7 +18,7 @@ const actions = {
       data: pagination
     })
   },
-  getArticleById(context, data) {
+  getArticleById({ commit }, data) {
     return request({
       url: `/blog/article`,
       method: 'post',
@@ -44,7 +48,11 @@ const actions = {
 }
 
 // mutations
-const mutations = {}
+const mutations = {
+  SET_RESOURCE_ID(state, resourceId) {
+    state.resourceId = resourceId
+  }
+}
 
 export default {
   namespace: true,

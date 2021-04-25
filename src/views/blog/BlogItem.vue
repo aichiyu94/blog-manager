@@ -12,13 +12,23 @@
 
 <script>
 import BlogForm from '@/components/form/BlogForm'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     BlogForm,
   },
   data() {
     return {
-      id: this.$route.params.id,
+      id: null,
+      ...mapGetters(['getEditedId']),
+    }
+  },
+  created() {
+    if (this.$route.params.id) {
+      this.id = this.$route.params.id
+      this.$store.commit('SET_RESOURCE_ID', this.id)
+    } else {
+      this.id = this.getEditedId()
     }
   },
 }

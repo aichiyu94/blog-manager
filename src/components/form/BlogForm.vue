@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   props: {
     articleId: [String],
@@ -97,6 +98,7 @@ export default {
     formTitle() {
       return !this.articleId ? 'Create Article' : 'Edit Article'
     },
+    ...mapGetters(['getEditedId']),
   },
   watch: {
     articleId: {
@@ -125,7 +127,7 @@ export default {
     async uploadCoverImage(file) {
       if (file === null) return
       if (this.article.id) {
-        let updatedResult = await this.$store.dispatch('uploadImage', {
+        let updatedResult = await this.$store.dispatch('uploadCoverImage', {
           file: file,
           resourceId: this.article.id,
         })

@@ -6,7 +6,7 @@ import VuexPersistence from 'vuex-persist'
 const vuexLocal = new VuexPersistence({
   key: 'vma',
   storage: window.localStorage,
-  modules: ['app', 'auth']
+  modules: ['app', 'blog', 'auth']
 })
 
 Vue.use(Vuex)
