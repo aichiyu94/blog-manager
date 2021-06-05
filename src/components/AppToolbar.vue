@@ -165,19 +165,14 @@ export default {
     async handleRefresh() {
       var result = await this.$store.dispatch('refreshBlogSettings')
       if (result.data) {
-        window.Toast.$emit('SHOW_SNACKBAR', {
-          text: "Blog's configuration has been updated",
-          color: 'success',
-        })
+        this.Toast('')
+        this.Toast.success("Blog's configuration has been updated")
       }
     },
     handleLogut() {
       if (window.confirm('Are you sure to logout?')) {
         this.$store.dispatch('logout')
-        window.Toast.$emit('SHOW_SNACKBAR', {
-          text: 'Logout successfull',
-          color: 'success',
-        })
+        this.Toast.success('Logout successfull')
         this.$router.push('/auth/login')
       }
     },

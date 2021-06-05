@@ -1,12 +1,12 @@
 <template>
   <div class="page-user">
-    <v-container>
+    <v-container fluid>
       <v-row>
         <v-col cols="12">
           <v-card tile>
             <v-toolbar flat>
               <v-text-field
-                v-model="filter['filter[username]']"
+                v-model="search['search[username]']"
                 text
                 solo
                 flat
@@ -26,11 +26,14 @@
               <v-btn icon @click="handleCreateItem">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
+              <v-btn icon @click="handleImport">
+                <v-icon>mdi-import</v-icon>
+              </v-btn>
             </v-toolbar>
             <v-divider />
             <v-card v-show="showFilter" flat class="grey lighten-4">
               <v-card-text>
-                <v-btn-toggle v-model="filter['filter[gender]']" tile color="deep-purple accent-3">
+                <v-btn-toggle v-model="search['search[gender]']" tile color="deep-purple accent-3">
                   <v-btn value="male" icon>
                     <v-icon>mdi-gender-male</v-icon>
                   </v-btn>
@@ -49,35 +52,31 @@
               </v-card-actions>
             </v-card>
             <v-card-text class="pa-0">
-              <v-data-table
-                :loading="loadingItems"
-                :headers="headers"
-                :items="items"
-                :items-per-page-options="[15, 30, 50]"
-                :server-items-length="pagination.totalCount"
-                :items-per-page="pagination.pageSize"
-                :page.sync="filter['page']"
-                item-key="wxOpenId"
-                show-select
-                @update:page="handlePageChanged"
-              >
+              <v-data-table :loading="loadingItems" :headers="headers" :items="items" item-key="propertyId" show-select>
                 <template v-slot:[`item.Text`]="{ item }">
                   {{ item.value }}
                 </template>
-                <template v-slot:[`item.avatar`]="{ item }">
-                  <c-avatar :size="36" :src="item.avatar" />
-                </template>
                 <template v-slot:[`item.action`]="{ item }">
-                  <v-btn
-                    color="primary"
-                    outlined
-                    v-for="action in actions"
-                    :key="action.text"
-                    @click="action.click(item)"
-                  >
-                    <v-icon small>{{ action.icon }}</v-icon>
-                    {{ action.text }}
-                  </v-btn>
+                  <v-menu>
+                    <template v-slot:activator="{ on: menu }">
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on: tooltip }">
+                          <v-btn icon v-on="onTooltip({ ...tooltip, ...menu })">
+                            <v-icon>mdi-dots-vertical</v-icon>
+                          </v-btn>
+                        </template>
+                        <span>Action</span>
+                      </v-tooltip>
+                    </template>
+                    <v-list class="pa-0" dense>
+                      <v-list-item v-for="action in actions" :key="action.text" @click="action.click(item)">
+                        <v-list-item-icon class="mr-2">
+                          <v-icon small>{{ action.icon }}</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>{{ action.text }}</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </template>
               </v-data-table>
             </v-card-text>
@@ -90,136 +89,118 @@
 
 <script>
 import TooltipMixin from '@/mixins/Tooltip'
-import CAvatar from '@/components/avatar/CAvatar'
+import { mapGetters } from 'vuex'
 
 export default {
-  components: {
-    CAvatar,
-  },
+  components: {},
   mixins: [TooltipMixin],
   data() {
     return {
-      search: '',
-      loadingItems: false,
-      showFilter: false,
-      pagination: {
+      search: {
         pageIndex: 1,
         pageSize: 15,
         totalCount: 0,
       },
-      filter: {
-        page: 1,
-        'filter[loginName]': null,
-      },
-      headers: [],
+      loadingItems: false,
+      showFilter: false,
+      importDialogVisible: false,
+      headers: [
+        {
+          text: this.t('UI.Column.Name'),
+          value: 'propertyName',
+        },
+        {
+          text: this.t('UI.Column.Type'),
+          value: 'propertyType',
+        },
+        {
+          text: this.t('UI.Column.Description'),
+          value: 'description',
+        },
+        {
+          text: 'Action',
+          value: 'action',
+        },
+      ],
       items: [],
       actions: [
         {
-          text: this.t('UI.function.Edit'),
+          text: 'Edit Item',
           icon: 'mdi-pencil',
           click: this.handleEditItem,
+        },
+        {
+          text: 'Delete Item',
+          icon: 'mdi-close',
+          click: this.handleDeleteItem,
         },
       ],
     }
   },
+  computed: {
+    ...mapGetters(['FundPropertyDefine', 'StockPropertyDefine']),
+  },
   watch: {
     '$route.query': {
       handler(query) {
-        const filter = this.updateFilterQuery(query)
-        this.fetchRecords(filter)
+        const search = this.updateFilterQuery(query)
+        this.fetchRecords(search)
       },
       immediate: true,
     },
   },
   methods: {
-    //
     updateFilterQuery(query) {
-      const filter = Object.assign(this.filter, query)
-      filter.page = parseInt(filter.page)
-      return filter
+      const search = Object.assign(this.search, query)
+      search.pageIndex = parseInt(search.pageIndex)
+      return search
     },
     resetFilter() {
-      this.filter = {
-        page: 1,
-        'filter[username]': null,
-      }
+      this.search.pageIndex = 1
     },
-    async fetchRecords() {
+    async fetchRecords(query) {
       this.loadingItems = true
-      this.items = []
-      const res = await this.$store.dispatch('fetchUser', this.pagination)
-      const { data, pagination } = res.data
+      const { data } = await this.$store.dispatch('fetchSysProperties')
       this.loadingItems = false
       this.items = data
-      this.pagination.totalCount = pagination.totalCount
     },
     //action
     handleCreateItem() {
       this.$router.push({
-        path: '/sys/user/create',
+        path: '/sys/property/create',
       })
     },
-    handleEditItem({ wxOpenId }) {
+    handleImport() {},
+    handleViewItem() {},
+    handleEditItem({ propertyId }) {
       this.$router.push({
-        path: `/sys/user/item/${wxOpenId}`,
+        path: `/sys/property/item/${propertyId}`,
       })
     },
+    handleSubmit() {},
     handleRefreshItem() {
-      this.fetchRecords(this.filter)
-    },
-    // filter
-    handlePageChanged(page) {
-      this.filter.page = page
+      this.fetchRecords(this.search)
     },
     handleResetFilter() {
-      this.filter = {
-        page: 1,
-        'filter[username]': null,
-        'filter[gender]': null,
-      }
+      this.search.pageIndex = 1
       this.$router.replace({
         path: this.$route.path,
       })
     },
     handleApplyFilter() {
-      this.filter.t = Date.now()
       this.$router.replace({
         path: this.$route.path,
-        query: this.filter,
+        query: this.search,
       })
     },
     handleClear() {
       this.resetFilter()
-      this.filter.t = Date.now()
       this.$router.replace({
         path: this.$route.path,
-        query: this.filter,
+        query: this.search,
       })
     },
   },
-  mounted() {
-    this.headers = [
-      {
-        text: this.t('UI.Column.Avatar'),
-        value: 'avatar',
-      },
-      {
-        text: this.t('UI.Column.Name'),
-        value: 'loginName',
-      },
-      {
-        text: this.t('UI.Column.Email'),
-        value: 'email',
-      },
-      {
-        text: this.t('UI.Column.Phone'),
-        value: 'phone',
-      },
-      {
-        text: this.t('UI.Column.Action'),
-        value: 'action',
-      },
-    ]
-  },
+  mounted() {},
 }
 </script>

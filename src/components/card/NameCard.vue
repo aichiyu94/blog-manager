@@ -115,7 +115,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.caption
-.subheading
+.caption .subheading
   font-weight:200
 </style>

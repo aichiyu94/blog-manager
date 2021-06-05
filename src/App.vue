@@ -60,10 +60,14 @@ export default {
       this.rightDrawer = !this.rightDrawer
     },
   },
-  mounted() {
+  async mounted() {
     if (typeof window !== undefined && window.Toast === undefined) {
       window.Toast = this
     }
+    await this.$store.dispatch('fetchSysProperties')
+    await this.$store.dispatch('fetchUser', {})
+    await this.$store.dispatch('fetchFundProperties')
+    await this.$store.dispatch('fetchStockProperties')
   },
   created() {
     this.$on('SHOW_SNACKBAR', (e) => {

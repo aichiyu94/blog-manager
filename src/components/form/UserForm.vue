@@ -3,82 +3,56 @@
     <v-card-title>{{ formTitle }}</v-card-title>
     <v-divider />
     <v-card-text>
-      <v-form ref="form" v-model="valid">
+      <v-form ref="form" v-model="valid" class="justify-center">
         <v-row>
-          <v-col :cols="6">
+          <v-col>
             <v-text-field
               outlined
-              :label="form.username.label"
-              :placeholder="form.username.placeholder"
-              v-model="formModel.username"
+              :label="formModel.nickname.label"
+              :placeholder="formModel.nickname.placeholder"
+              v-model="form[formModel.nickname.bind]"
               required
               :append-icon="'mdi-account-check'"
-              :rules="form.username.rules"
+              :rules="formModel.nickname.rules"
             />
           </v-col>
-          <v-col :cols="6" v-if="!userId">
+        </v-row>
+        <v-row>
+          <v-col v-if="!userWxOpenId">
             <v-text-field
               outlined
-              :label="form.password.label"
-              :placeholder="form.password.placeholder"
-              v-model="formModel.password"
+              :label="formModel.password.label"
+              :placeholder="formModel.password.placeholder"
+              v-model="form[formModel.password.bind]"
               required
               :append-icon="'mdi-account-check'"
-              :rules="form.password.rules"
+              :rules="formModel.password.rules"
             />
           </v-col>
-          <v-col :cols="6">
+        </v-row>
+        <v-row>
+          <v-col>
             <v-text-field
               outlined
-              :label="form.email.label"
-              :placeholder="form.email.placeholder"
-              v-model="formModel.email"
+              :label="formModel.email.label"
+              :placeholder="formModel.email.placeholder"
+              v-model="form[formModel.email.bind]"
               required
               :append-icon="'mdi-email'"
-              :rules="form.email.rules"
+              :rules="formModel.email.rules"
             />
           </v-col>
-          <v-col :cols="6">
+        </v-row>
+        <v-row>
+          <v-col>
             <v-text-field
               outlined
-              :label="form.phone.label"
-              :placeholder="form.phone.placeholder"
-              v-model="formModel.phone"
+              :label="formModel.phone.label"
+              :placeholder="formModel.phone.placeholder"
+              v-model="form[formModel.phone.bind]"
               required
               :append-icon="'mdi-phone'"
-              :rules="form.phone.rules"
-            />
-          </v-col>
-          <v-col :cols="6">
-            <v-text-field
-              outlined
-              :label="form.firstname.label"
-              :placeholder="form.firstname.placeholder"
-              v-model="formModel.firstname"
-              :append-icon="'mdi-location'"
-              required
-              :rules="form.firstname.rules"
-            />
-          </v-col>
-          <v-col :cols="6">
-            <v-text-field
-              outlined
-              :label="form.lastname.label"
-              :placeholder="form.lastname.placeholder"
-              v-model="formModel.lastname"
-              required
-              :rules="form.lastname.rules"
-            />
-          </v-col>
-          <v-col :cols="6">
-            <v-select
-              outlined
-              :label="form.gender.label"
-              :placeholder="form.gender.placeholder"
-              :rules="form.gender.rules"
-              :items="genders"
-              v-model="formModel.gender"
-              required
+              :rules="formModel.phone.rules"
             />
           </v-col>
         </v-row>
@@ -94,60 +68,39 @@
 </template>
 
 <script>
-import { EMAIL } from '@/util/regex'
+// import { EMAIL } from '@/util/regex'
 export default {
   props: {
-    userId: [Number, String],
+    userWxOpenId: [Number, String],
   },
   data: () => ({
-    genders: ['male', 'female', 'other'],
     valid: true,
     loading: false,
+    form: {},
     formModel: {
-      username: null,
-      password: null,
-      email: null,
-      phone: null,
-      firstname: null,
-      lastname: null,
-      gender: 'male',
-    },
-
-    form: {
-      username: {
-        label: 'Username',
-        placeholder: 'Tookit',
-        rules: [(v) => !!v || 'This field is required'],
+      nickname: {
+        label: 'Nickname',
+        bind: 'nickname',
+        placeholder: 'luke',
+        rules: [(v) => !!v || 'This Nickname is required'],
       },
       password: {
         label: 'Password',
-        placeholder: 'xxx',
-        rules: [(v) => !!v || 'This field is required'],
+        bind: 'password',
+        placeholder: 'The password',
+        rules: [(v) => !!v || 'This Password is required'],
       },
       email: {
         label: 'Email',
-        placeholder: 'wangqiangshen@gmail.com',
-        rules: [(v) => !!v || 'This field is required', (v) => EMAIL.test(v) || 'Invalid email'],
+        bind: 'email',
+        placeholder: 'aichiyu94@gmail.com',
+        rules: [],
       },
       phone: {
         label: 'phone',
-        placeholder: '18682157492',
-        rules: [(v) => !!v || 'This field is required'],
-      },
-      firstname: {
-        label: 'Firstname',
-        placeholder: 'Firstname',
-        rules: [(v) => !!v || 'This field is required'],
-      },
-      lastname: {
-        label: 'Lastname',
-        placeholder: 'Lastname',
-        rules: [(v) => !!v || 'This field is required'],
-      },
-      gender: {
-        label: 'Gender',
-        placeholder: 'gender',
-        rules: [(v) => !!v || 'This field is required'],
+        bind: 'phone',
+        placeholder: 'phone',
+        rules: [(v) => !!v || 'This phone is required'],
       },
     },
 
@@ -155,11 +108,11 @@ export default {
   }),
   computed: {
     formTitle() {
-      return !this.userId ? 'Create User' : 'Edit User'
+      return !this.userWxOpenId ? 'Create User' : 'Edit User'
     },
   },
   watch: {
-    userId: {
+    userWxOpenId: {
       handler(id) {
         if (id) {
           this.getItemById(id)
@@ -170,12 +123,11 @@ export default {
   },
   methods: {
     getItemById(id) {
-      debugger
       this.loading = true
       this.$store
-        .dispatch('getUserById', id)
+        .dispatch('getUserById', { wxOpenId: id })
         .then(({ data }) => {
-          this.formModel = data
+          this.form = data
           this.loading = false
         })
         .catch(() => {
@@ -184,42 +136,23 @@ export default {
     },
     handleCancelForm() {
       this.$refs.form.reset()
+      window.history.go(-1)
     },
-    handleSubmitForm() {
-      this.loading = true
+    async handleSubmitForm() {
       if (this.$refs.form.validate()) {
-        if (this.userId) {
-          this.updateUser(this.userId)
-        } else {
-          this.createUser()
+        if (this.userWxOpenId) {
+          this.loading = true
+          const { data } = await this.$store.dispatch('updateUser', {
+            wxOpenId: this.userWxOpenId,
+            nickname: this.form.nickname,
+            phone: this.form.phone,
+            email: this.form.email,
+          })
+
+          window.history.go(-1)
+          this.Toast.info('Updated ' + (data ? 'successful' : 'failed'))
         }
       }
-    },
-    updateUser() {
-      this.$store
-        .dispatch('updateUser', {
-          id: this.userId,
-          data: this.formModel,
-        })
-        .then(() => {
-          this.loading = false
-        })
-        .catch(() => {
-          this.loading = false
-        })
-    },
-    createUser() {
-      this.$store
-        .dispatch('createUser', this.formModel)
-        .then(({ data }) => {
-          this.loading = false
-          this.$router.push({
-            path: `/acl/user/item/${data.id}`,
-          })
-        })
-        .catch(() => {
-          this.loading = false
-        })
     },
   },
 }

@@ -98,12 +98,13 @@ export default {
     formTitle() {
       return !this.articleId ? 'Create Article' : 'Edit Article'
     },
-    ...mapGetters(['getEditedId']),
   },
   watch: {
     articleId: {
       handler(id) {
-        this.getItemById(id)
+        if (!id) {
+          this.article = {}
+        } else this.getItemById(id)
       },
       immediate: true,
     },

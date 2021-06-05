@@ -1,6 +1,6 @@
 <template>
   <div class="page-blog">
-    <v-container>
+    <v-container fluid>
       <v-row>
         <v-col cols="12">
           <v-card tile>
@@ -191,15 +191,15 @@ export default {
         })
     },
     handleEditItem({ id }) {
+      this.$store.commit('SET_RESOURCE_ID', id)
       this.$router.push({
         name: 'blog.item.edit',
-        params: { id: id },
       })
     },
     async handleDeleteItem({ id }) {
-      await this.$store.dispatch('delArticle',{resourceId: id})
-      this.$toasted.success('successful');
-      await this.fetchRecords();
+      await this.$store.dispatch('delArticle', { resourceId: id })
+      this.$toasted.success('successful')
+      await this.fetchRecords()
     },
     handleRefreshItem() {
       this.fetchRecords(this.pagination)

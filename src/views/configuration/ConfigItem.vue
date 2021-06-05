@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col>
-          <user-form :userWxOpenId="id" />
+          <config-form :config-name="id" />
         </v-col>
       </v-row>
     </v-container>
@@ -11,13 +11,13 @@
 </template>
 
 <script>
-import UserForm from '@/components/form/UserForm'
+import ConfigForm from '@/components/form/ConfigForm'
 export default {
   components: {
-    UserForm,
+    ConfigForm,
   },
   props: {
-    id: [Number, String],
+    id: [String],
   },
 }
 </script>

@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col>
-          <blog-form :article-id="id" />
+          <blog-form :article-id="blogId" />
         </v-col>
       </v-row>
     </v-container>
@@ -19,17 +19,14 @@ export default {
   },
   data() {
     return {
-      id: null,
-      ...mapGetters(['getEditedId']),
+      blogId: '',
     }
   },
-  created() {
-    if (this.$route.params.id) {
-      this.id = this.$route.params.id
-      this.$store.commit('SET_RESOURCE_ID', this.id)
-    } else {
-      this.id = this.getEditedId()
-    }
+  computed: {
+    ...mapGetters(['editedBlogId']),
+  },
+  mounted() {
+    this.blogId = this.editedBlogId
   },
 }
 </script>
